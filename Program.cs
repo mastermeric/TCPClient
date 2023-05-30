@@ -55,7 +55,7 @@ class Program
                         // ### How can I do it?
                             try
                             {
-                                for (; ; )
+                                while (true)
                                 {
                                     var response = await reader.ReadLineAsync();
                                     if (response == null)
