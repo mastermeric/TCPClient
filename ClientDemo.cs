@@ -32,12 +32,12 @@ private void HandleCommunication()
     try
     {
         //=========== STRESS / MESSAGE QUEUE TEST  =========================
-        for (int i = 0; i < 10; i++)
-        {
-            _sWriter.WriteLine("Client dat Test Datasi :: " + i);
-            _sWriter.Flush();
-            Thread.Sleep(10);
-        }
+        // for (int i = 0; i < 10; i++)
+        // {
+        //     _sWriter.WriteLine("Client dat Test Datasi :: " + i);
+        //     _sWriter.Flush();
+        //     Thread.Sleep(10);
+        // }
         //=========== STRESS / MESSAGE QUEUE TEST  =========================
 
         //=========== NORMAL RUTIN TEST  ===================================
@@ -57,13 +57,18 @@ private void HandleCommunication()
             // NetworkStream stream = _client.GetStream();
             // Byte[] data = System.Text.Encoding.ASCII.GetBytes(sData);
             // stream.Write(data, 0, data.Length);
-            //========================================================================
 
+            //Yontem3 :  Send Byte Array 
+            Console.Write("> ");
+            NetworkStream stream = _client.GetStream();
+            sData = Console.ReadLine();
+            Byte[] data =  Encoding.ASCII.GetBytes(sData); //{0x11 , 0x12 , 0x13, 0x14 , 0x15};
+            stream.Write(data, 0, data.Length);
+            //========================================================================
 
             //====================  Receive Data From Server  ============================
             //Yontem1 :
             //String sDataIncomming = _sReader.ReadLine();
-
             //Yontem2 :
             // Byte[] data = new Byte[256];
             // NetworkStream stream = _client.GetStream();
