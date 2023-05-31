@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using System.Security.AccessControl;
+using System.Net.Sockets;
+using System.Text;
 
 namespace TCPClient;
 class Program
@@ -13,71 +15,75 @@ class Program
         Console.WriteLine("CLIENT Started.. OK..");
 
         //metot1
-        //await ConnectAsTcpClient("127.0.0.1", 6666);
+        //ClientDemo client = new ClientDemo("127.0.0.1", 6666);
+
 
         //metot2
-        ClientDemo client = new ClientDemo("127.0.0.1", 6666);
+
+
+        for (int i = 0; i < 5; i++)
+        {
+            Task.Run(() => {
+                ClientDemo client = new ClientDemo("127.0.0.1", 6666);
+            });
+            /*
+            ClientDemo client = new ClientDemo("127.0.0.1", 6666);
+            Thread t = new Thread(new ParameterizedThreadStart(HandleClient));
+            t.Start(client);
+            */
+        }
+        Console.ReadLine();
     }
 
+    private static StreamReader _sReader;
+    private static StreamWriter _sWriter;
+    private static void HandleClient(object? obj) {
+        TcpClient _client = (TcpClient)obj;
 
-        //metot1
-        static async Task ConnectAsTcpClient(string ip, int port)
+        _client = new TcpClient();
+        _client.ConnectAsync("127.0.0.1", 6666);
+
+        _sReader = new StreamReader(_client.GetStream(), Encoding.ASCII);
+        _sWriter = new StreamWriter(_client.GetStream(), Encoding.ASCII);
+
+        String sData = "";
+
+        try
         {
-        //private static readonly string ClientRequestString = "Hello Mr. Server";
-            string ClientRequestString = "Hello Mr. Server";
-
-            for (; ; )
+            while (true)
             {
-                try
-                {
-                    await Task.Delay(millisecondsDelay: 1500);
-                    using (var tcpClient = new TcpClient())
-                    {
-                        Console.WriteLine("[Client] Attempting connection to server " + ip + ":" + port);
-                        Task connectTask = tcpClient.ConnectAsync(ip, port);
-                        Task timeoutTask = Task.Delay(millisecondsDelay: 6100);
-                        if (await Task.WhenAny(connectTask, timeoutTask) == timeoutTask)
-                        {
-                            throw new TimeoutException();
-                        }
+                Console.Write("> ");
+                sData = Console.ReadLine();
+
+                //====================  Send Data To  Server  ============================
+                //Yontem1 :
+                // write data and make sure to flush, or the buffer will continue to
+                // grow, and your data might not be sent when you want it, and will only be sent once the buffer is filled.
+                _sWriter.WriteLine(sData);
+                _sWriter.Flush();
+
+                //Yontem2 :
+                // NetworkStream stream = _client.GetStream();
+                // Byte[] data = System.Text.Encoding.ASCII.GetBytes(sData);
+                // stream.Write(data, 0, data.Length);
+                //========================================================================
 
 
-                        Console.WriteLine("[Client] Connected to server");
-                        using (var networkStream = tcpClient.GetStream())
-                        using (var reader = new StreamReader(networkStream))
-                        using (var writer = new StreamWriter(networkStream) { AutoFlush = true })
-                        {
-                            Console.WriteLine(string.Format("[Client] Writing request '{0}'", ClientRequestString));
-                            await writer.WriteLineAsync(ClientRequestString);
+                //====================  Receive Data From Server  ============================
+                //Yontem1 :
+                //String sDataIncomming = _sReader.ReadLine();
 
-                        // ### not good, server can send a event, at moment is closing the connection and reconnect.
-                        // ### I need a event, if new data available
-                        // ### How can I do it?
-                            try
-                            {
-                                while (true)
-                                {
-                                    var response = await reader.ReadLineAsync();
-                                    if (response == null)
-                                    {
-                                        break;
-                                    }
-                                    Console.WriteLine(string.Format("[Client] Server response was '{0}'", response));
-                                }
-                                Console.WriteLine("[Client] Server disconnected");
-                            }
-                            catch (IOException)
-                            {
-                                Console.WriteLine("[Client] Server disconnected");
-                            }
-                        }
-                    }
-                }
-                catch (TimeoutException)
-                {
-                    // reconnect
-                    Console.WriteLine("[Client] Timeout - No connection");
-                }
+                //Yontem2 :
+                // Byte[] data = new Byte[256];
+                // NetworkStream stream = _client.GetStream();
+                // Int32 bytes = stream.Read(data, 0, data.Length);
+                // string response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+                //============================================================================
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine("ERROR: Cannot Connect to Server !");
+        }
+    }
 }

@@ -17,7 +17,7 @@ public ClientDemo(String ipAddress, int portNum)
 
     //MericY : Connect ASYNC ??
     _client = new TcpClient();
-    _client.ConnectAsync(ipAddress, portNum);
+    _client.Connect(ipAddress, portNum);
 
     HandleCommunication();
 }
@@ -27,23 +27,33 @@ private void HandleCommunication()
     _sReader = new StreamReader(_client.GetStream(), Encoding.ASCII);
     _sWriter = new StreamWriter(_client.GetStream(), Encoding.ASCII);
 
-    String sData = "";
+    String sData = null;
 
     try
     {
+        //=========== STRESS / MESSAGE QUEUE TEST  =========================
+        for (int i = 0; i < 10; i++)
+        {
+            _sWriter.WriteLine("Client dat Test Datasi :: " + i);
+            _sWriter.Flush();
+            Thread.Sleep(10);
+        }
+        //=========== STRESS / MESSAGE QUEUE TEST  =========================
+
+        //=========== NORMAL RUTIN TEST  ===================================
         while (true)
         {
-            Console.Write("> ");
-            sData = Console.ReadLine();
-
             //====================  Send Data To  Server  ============================
             //Yontem1 :
-            // write data and make sure to flush, or the buffer will continue to
-            // grow, and your data might not be sent when you want it, and will only be sent once the buffer is filled.
-            _sWriter.WriteLine(sData);
-            _sWriter.Flush();
+            //write and make sure to flush, or the buffer will continue to grow, and your data might not be sent when you want it, and will only be sent once the buffer is filled.
+            // Console.Write("> ");
+            // sData = Console.ReadLine();
+            // _sWriter.Write(sData);
+            // _sWriter.Flush();
 
             //Yontem2 :
+            // Console.Write("> ");
+            // sData = Console.ReadLine();
             // NetworkStream stream = _client.GetStream();
             // Byte[] data = System.Text.Encoding.ASCII.GetBytes(sData);
             // stream.Write(data, 0, data.Length);
@@ -61,6 +71,7 @@ private void HandleCommunication()
             // string response = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             //============================================================================
         }
+        //=========== NORMAL RUTIN TEST  ===================================
     }
     catch (Exception ex)
     {
