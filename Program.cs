@@ -13,8 +13,8 @@ class Program
         }
 
         Console.WriteLine("CLIENT Started.. OK..");
-        
-        ClientDemo client = new ClientDemo("127.0.0.1", 6666);
+
+        ClientDemo client = new ClientDemo("37.148.212.45", 6666);
 
 
         //metot2
