@@ -31,15 +31,18 @@ private void HandleCommunication()
 
     try
     {
+
         //=========== STRESS / MESSAGE QUEUE TEST  =========================
-        // for (int i = 0; i < 10; i++)
-        // {
-        //     _sWriter.WriteLine("Client dat Test Datasi :: " + i);
-        //     _sWriter.Flush();
-        //     Thread.Sleep(10);
-        // }
+        for (int i = 0; i < 10; i++)
+        {
+            _sWriter.WriteLine("AAAAAAAA " + i);
+            _sWriter.Flush();
+            Thread.Sleep(10);
+        }
         //=========== STRESS / MESSAGE QUEUE TEST  =========================
 
+
+/*
         //=========== NORMAL RUTIN TEST  ===================================
         while (true)
         {
@@ -58,7 +61,7 @@ private void HandleCommunication()
             // Byte[] data = System.Text.Encoding.ASCII.GetBytes(sData);
             // stream.Write(data, 0, data.Length);
 
-            //Yontem3 :  Send Byte Array 
+            //Yontem3 :  Send Byte Array
             Console.Write("> ");
             NetworkStream stream = _client.GetStream();
             sData = Console.ReadLine();
@@ -77,6 +80,7 @@ private void HandleCommunication()
             //============================================================================
         }
         //=========== NORMAL RUTIN TEST  ===================================
+    */
     }
     catch (Exception ex)
     {
